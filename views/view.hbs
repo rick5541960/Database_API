@@ -1,1 +1,538 @@
-test
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<title>CRUD operation on MongoDB</title>
+		<style>
+			table{
+				background-color: blue;
+				text-align: center;
+				border: 2px solid black;
+			}
+			tr{
+				background-color: yellow;
+			}
+			
+			button{
+				border-radius: 30%;
+				background-color: pink;
+			}
+			
+		</style>
+	</head>
+
+	<body>
+		
+		<form id="filter" onSubmit="findRecordsByName()" align="center">
+			<select id="select">
+				<option value="customers">Customer</option>
+				<option value="items">Store Item</option>
+			</select>
+			<label>Name</label>
+			<input id="name"></input>
+			<input type="submit"></input>
+		</form>
+		
+		<div align="center">
+			<button onClick="findAllCustomers()">Show All Customer Records</button>
+			<button onClick="findAllItems()">Show All Store Item Records</button>
+			<button onClick="toggleOnCustomer()">Create a Customer Record</button>
+			<button onClick="toggleOnItem()">Create a Store Item Record</button>
+		</div>
+		
+		<div id="error"></div>
+	
+		<table id="displayCustomer" align="center">
+			<thead>
+				<tr>
+					<th colspan="5">Personal</th>
+					<th colspan="5">Home</th>
+					<th colspan="5">Shipping</th>
+					<th></th>
+				</tr>
+				<tr>
+					<th>Title</th>
+					<th>First Name</th>
+					<th>Last Name</th>
+					<th>Mobile</th>
+					<th>Email</th>
+					<th>Line 1</th>
+					<th>Line 2</th>
+					<th>Town</th>
+					<th>CountyOrCity</th>
+					<th>Eircode</th>
+					<th>Line 1</th>
+					<th>Line 2</th>
+					<th>Town</th>
+					<th>CountyOrCity</th>
+					<th>Eircode</th>
+					<th></th>
+				</tr>
+		    </thead>
+			<tbody>
+			{{#each customers}}
+				<tr>
+					<td>{{Title}}</td>	<td>{{FName}}</td>	<td>{{LName}}</td>	<td>{{Mobile}}</td>	<td>{{Email}}</td>
+					<td>{{Home.Line1}}</td>	<td>{{Home.Line2}}</td>	<td>{{Home.Town}}</td>	<td>{{Home.CountyOrCity}}</td>	<td>{{Home.Eircode}}</td>
+					<td>{{Shipping.Line1}}</td>	<td>{{Shipping.Line2}}</td>	<td>{{Shipping.Town}}</td>	<td>{{Shipping.CountyOrCity}}</td>	<td>{{Shipping.Eircode}}</td>
+					
+					<td>
+						<button onClick="toggleOnUpdateCustomer()" data-id="{{_id}}" data-Title="{{Title}}" data-FName="{{FName}}" data-LName="{{LName}}" data-title="{{Title}}"
+							data-Mobile="{{Mobile}}" data-Email="{{Email}}" data-Home-Line1="{{Home.Line1}}" data-Home-Line2="{{Home.Line1}}" data-Home-Town="{{Home.Town}}" data-Home-CountyOrCity="{{Home.CountyOrCity}}"
+							data-Home-Eircode="{{Home.Eircode}}" data-Shipping-Line1="{{Shipping.Line1}}" data-Shipping-Line2="{{Shipping.Line2}}" data-Shipping-Town="{{Shipping.Town}}" data-Shipping-CountyOrCity="{{Shipping.CountyOrCity}}" data-Shipping-Eircode="{{Shipping.Eircode}}"
+						>update</button>
+						<button onClick="deleteCustomer()" data-id="{{_id}}">delete</button>
+					</td>
+				</tr>
+			{{/each}}
+			</tbody>
+		</table>
+		
+		<table id="displayItem" align="center">
+			<thead>
+				<tr>
+					<th>Model</th>
+					<th>Manufacturer</th>
+					<th>Price</th>
+					<th></th>
+				</tr>
+		    </thead>
+			<tbody>
+			{{#each items}}
+				<tr>
+					<td>{{model}}</td>	<td>{{manufacturer}}</td>	<td>{{price}}</td>
+					
+					<td>
+						<button onClick="toggleOnUpdateItem()" data-id="{{_id}}" data-model="{{model}}" data-manufacturer="{{manufacturer}}"
+							data-price="{{price}}">update</button>
+						<button onClick="deleteItem()" data-id="{{_id}}">delete</button>
+					</td>
+				</tr>
+			{{/each}}
+			</tbody>
+		</table>
+
+		<form onSubmit="createCustomer()" id="createCustomer" style="display:none">
+			<div id="person">
+				<p><b>Personal</b></p>
+				<label id="Title">Title</label>
+				<input type="text"></input>
+				
+				<label id="FName">First Name</label>
+				<input type="text"></input>
+				
+				<label id="LName">Last Name</label>
+				<input type="text"></input>
+				
+				<label id="Mobile">Mobile</label>
+				<input type="text"></input>
+				
+				<label id="Email">Email</label>
+				<input type="text"></input>
+			</div>	
+			
+			<div id="home">
+				<p><b>Home Address</b></p>
+				<label id="Line1">Line1</label>
+				<input type="text"></input>
+				
+				<label id="Line2">Line2</label>
+				<input type="text"></input>
+				
+				<label id="Town">Town</label>
+				<input type="text"></input>
+				
+				<label id="CountyOrCity">CountyOrCity</label>
+				<input type="text"></input>
+				
+				<label id="Eircode">Eircode</label>
+				<input type="text"></input>
+			</div>
+			
+			<div id="shipping">
+				<p><b>Shipping Address</b></p>
+				<label id="Line1">Line1</label>
+				<input type="text"></input>
+				
+				<label id="Line2">Line2</label>
+				<input type="text"></input>
+				
+				<label id="Town">Town</label>
+				<input type="text"></input>
+				
+				<label id="CountyOrCity">CountyOrCity</label>
+				<input type="text"></input>
+				
+				<label id="Eircode">Eircode</label>
+				<input type="text"></input>
+			</div>
+			<button onClick="toggleOffCustomer()">Cancel</button>
+			<input type="submit"></input>
+		</form>
+			
+		<form onSubmit="createItem()" id="createItem" style="display:none">
+			<div id="item">
+				<label id="model">Model</label>
+				<input type="text"></input>
+				
+				<label id="manufacturer">Manufacturer</label>
+				<input type="text"></input>
+				
+				<label id="price">Price</label>
+				<input type="text"></input>
+			</div>	
+			
+			<button onClick="toggleOffItem()">Cancel</button>
+			<input type="submit"></input>
+		</form>
+		
+		<form onSubmit="updateCustomer()" id="updateCustomer" style="display:none">
+			<label id="customerID" style="display:none"></label>
+			<div id="person">
+				<p><b>Personal</b></p>
+				<label id="Title">Title</label>
+				<input type="text"></input>
+				
+				<label id="FName">First Name</label>
+				<input type="text"></input>
+				
+				<label id="LName">Last Name</label>
+				<input type="text"></input>
+				
+				<label id="Mobile">Mobile</label>
+				<input type="text"></input>
+				
+				<label id="Email">Email</label>
+				<input type="text"></input>
+			</div>	
+			
+			<div id="home">
+				<p><b>Home Address</b></p>
+				<label id="Line1">Line1</label>
+				<input type="text"></input>
+				
+				<label id="Line2">Line2</label>
+				<input type="text"></input>
+				
+				<label id="Town">Town</label>
+				<input type="text"></input>
+				
+				<label id="CountyOrCity">CountyOrCity</label>
+				<input type="text"></input>
+				
+				<label id="Eircode">Eircode</label>
+				<input type="text"></input>
+			</div>
+			
+			<div id="shipping">
+				<p><b>Shipping Address</b></p>
+				<label id="Line1">Line1</label>
+				<input type="text"></input>
+				
+				<label id="Line2">Line2</label>
+				<input type="text"></input>
+				
+				<label id="Town">Town</label>
+				<input type="text"></input>
+				
+				<label id="CountyOrCity">CountyOrCity</label>
+				<input type="text"></input>
+				
+				<label id="Eircode">Eircode</label>
+				<input type="text"></input>
+			</div>
+			<button onClick="toggleOffUpdateCustomer()">Cancel</button>
+			<input type="submit"></input>
+		</form>
+		
+		<form onSubmit="updateItem()" id="updateItem" style="display:none">
+			<label id="itemID" style="display:none"></label>
+			<div id="item">
+				<label id="model">Model</label>
+				<input type="text"></input>
+				
+				<label id="manufacturer">Manufacturer</label>
+				<input type="text"></input>
+				
+				<label id="price">Price</label>
+				<input type="text"></input>
+			</div>	
+			
+			<button onClick="toggleOffUpdateItem()">Cancel</button>
+			<input type="submit"></input>
+		</form>
+		
+		
+		<script>
+			var xhr = new XMLHttpRequest();
+			
+			xhr.onreadystatechange = function(){
+				console.log(this.readyState);
+				console.log(this.status);
+				if(this.readyState==4&&this.status==200){
+					document.getElementById("error").innerHTML = this.responseText;
+					window.location.assign("http://localhost:3000/customers");
+				}else{
+					document.getElementById("error").innerHTML = "Error while requesting server";
+				}
+			}
+			
+			function updateCustomer(){
+				event.preventDefault();
+				let ID = document.getElementById("customerID").innerHTML;
+				let form = document.getElementById("updateCustomer");
+				let person = form.getElementsByTagName("div")[0];
+				let home = form.getElementsByTagName("div")[1];
+				let shipping = form.getElementsByTagName("div")[2];
+				let pLabel =  person.getElementsByTagName("label");
+				let pInput =  person.getElementsByTagName("input");
+				let hLabel =  home.getElementsByTagName("label");
+				let hInput =  home.getElementsByTagName("input");
+				let sLabel =  shipping.getElementsByTagName("label");
+				let sInput =  shipping.getElementsByTagName("input");
+				let data = {Home:{},Shipping:{}};
+				
+				for(let i=0;i<pLabel.length;i++){
+					let key = pLabel[i].id;
+					data[key] = pInput[i].value;
+				}
+				
+				for(let i=0;i<hLabel.length;i++){
+					let key = hLabel[i].id;
+					data.Home[key] = hInput[i].value;
+			
+					let val = sLabel[i].id;
+					data.Shipping[val] = sInput[i].value;
+				}
+				console.log(data);
+				console.log(ID);
+				xhr.open("PUT", "http://localhost:3000/customers/"+ID, true);
+				xhr.setRequestHeader("Content-Type", "application/json");
+				xhr.send(JSON.stringify(data));
+				document.getElementById("updateCustomer").reset();
+			}
+			
+			function updateItem(){
+				event.preventDefault();
+				let ID = document.getElementById("itemID").innerHTML;
+				let form = document.getElementById("updateItem");
+				let item = form.getElementsByTagName("div");
+				let label =  item[0].getElementsByTagName("label");
+				let input =  item[0].getElementsByTagName("input");
+				let data = {};
+				
+				for(let i=0;i<label.length;i++){
+					if(input[i].value!=""){
+						let key = label[i].id;
+						data[key] = input[i].value;
+					}
+				}
+				xhr.open("PUT", "http://localhost:3000/items/"+ID, true);
+				xhr.setRequestHeader("Content-Type", "application/json");
+				xhr.send(JSON.stringify(data));
+				document.getElementById("updateItem").reset();
+			}
+			
+			function toggleOnUpdateCustomer(){
+				let forms = document.getElementsByTagName("form");
+				let customer = document.getElementById("updateCustomer");
+				forms[0].style.display = "none";
+				forms[1].style.display = "none";
+				forms[2].style.display = "none";
+				forms[3].style.display = "none";
+				customer.style.display = "block";
+
+				let form = document.getElementById("updateCustomer").getElementsByTagName("div");
+				let person = form[0];
+				let home = form[1];
+				let shipping = form[2];
+				let pInput = person.getElementsByTagName("input");
+				let hInput = home.getElementsByTagName("input");
+				let sInput = shipping.getElementsByTagName("input");
+				let button = event.target;
+				
+				document.getElementById("customerID").innerHTML = button.dataset.id;
+				
+				pInput[0].value = button.dataset.title;
+				pInput[1].value = button.dataset.fname;
+				pInput[2].value = button.dataset.lname;
+				pInput[3].value = button.dataset.mobile;
+				pInput[4].value = button.dataset.email;
+					
+				hInput[0].value = button.dataset.homeLine1;
+				hInput[1].value = button.dataset.homeLine2;
+				hInput[2].value = button.dataset.homeTown;
+				hInput[3].value = button.dataset.homeCountyorcity;
+				hInput[4].value = button.dataset.homeEircode;
+				
+				sInput[0].value = button.dataset.shippingLine1;
+				sInput[1].value = button.dataset.shippingLine2;
+				sInput[2].value = button.dataset.shippingTown;
+				sInput[3].value = button.dataset.shippingCountyorcity;
+				sInput[4].value = button.dataset.shippingEircode;
+			}
+			
+			function toggleOnUpdateItem(){
+				let forms = document.getElementsByTagName("form");
+				let itemForm = document.getElementById("updateItem");
+				forms[0].style.display = "none";
+				forms[1].style.display = "none";
+				forms[2].style.display = "none";
+				forms[3].style.display = "none";
+				itemForm.style.display = "block";
+				
+				let item = itemForm.getElementsByTagName("div");
+				let label =  item[0].getElementsByTagName("label");
+				let input =  item[0].getElementsByTagName("input");
+				let button = event.target;
+				
+				document.getElementById("itemID").innerHTML = button.dataset.id;
+				
+				input[0].value = button.dataset.model;
+				input[1].value = button.dataset.manufacturer;
+				input[2].value = button.dataset.price;
+				
+			}
+			
+			function toggleOffUpdateCustomer(){
+				event.preventDefault();
+				let form = document.getElementById("updateCustomer");
+				form.style.display = "none";
+			}
+			
+			function toggleOffUpdateItem(){
+				event.preventDefault();
+				let form = document.getElementById("updateItem");
+				form.style.display = "none";
+			}
+			
+			function deleteCustomer(){
+				xhr.open("DELETE", "http://localhost:3000/customers/"+event.target.dataset.id, true);
+				xhr.send();
+			}
+			
+			function deleteItem(){
+				xhr.open("DELETE", "http://localhost:3000/items/"+event.target.dataset.id, true);
+				xhr.send();
+			}
+			
+			function createCustomer(){
+				event.preventDefault();
+				let form = document.getElementById("createCustomer").getElementsByTagName("div");
+				let person = form[0];
+				let home = form[1];
+				let shipping = form[2];
+				let pLabel =  person.getElementsByTagName("label");
+				let pInput =  person.getElementsByTagName("input");
+				let hLabel =  home.getElementsByTagName("label");
+				let hInput =  home.getElementsByTagName("input");
+				let sLabel =  shipping.getElementsByTagName("label");
+				let sInput =  shipping.getElementsByTagName("input");
+				let data = {Home:{},Shipping:{}};
+				
+				for(let i=0;i<pLabel.length;i++){
+					if(pInput[i].value!=""){
+						let key = pLabel[i].id;
+						data[key] = pInput[i].value;
+					}
+				}
+				
+				for(let i=0;i<hLabel.length;i++){
+					if(hInput[i].value!=""){
+						let key = hLabel[i].id;
+						data.Home[key] = hInput[i].value;
+					}
+					if(sInput[i].value!=""){
+						let key = sLabel[i].id;
+						data.Shipping[key] = sInput[i].value;
+					}
+				}
+
+				xhr.open("POST", "http://localhost:3000/customers", true);
+				xhr.setRequestHeader("Content-Type", "application/json");
+				xhr.send(JSON.stringify(data));
+				document.getElementById("createCustomer").reset();
+			}
+			
+			function createItem(){
+				event.preventDefault();
+				let form = document.getElementById("createItem");
+				let item = form.getElementsByTagName("div");
+				let label =  item[0].getElementsByTagName("label");
+				let input =  item[0].getElementsByTagName("input");
+				let data = {};
+				
+				for(let i=0;i<label.length;i++){
+					if(input[i].value!=""){
+						let key = label[i].id;
+						data[key] = input[i].value;
+					}
+				}
+				
+				xhr.open("POST", "http://localhost:3000/items", true);
+				xhr.setRequestHeader("Content-Type", "application/json");
+				xhr.send(JSON.stringify(data));
+				document.getElementById("createItem").reset();
+			}
+			
+			function findRecordsByName(){
+				event.preventDefault();
+				let select = document.getElementById("select");
+				let selected = select.options[select.selectedIndex].value;
+				let name = document.getElementById("name").value;
+				window.location.assign("http://localhost:3000/"+selected+"/"+name);
+			}
+			
+			function findAllCustomers(){
+				window.location.assign("http://localhost:3000/customers");
+			}
+			
+			function findAllItems(){
+				window.location.assign("http://localhost:3000/items");
+			}
+			
+			function toggleOnCustomer(){
+				let forms = document.getElementsByTagName("form");
+				let customer = document.getElementById("createCustomer");
+				forms[0].style.display = "none";
+				forms[1].style.display = "none";
+				forms[2].style.display = "none";
+				forms[3].style.display = "none";
+				
+				customer.style.display = "block";
+			}
+			
+			function toggleOnItem(){
+				let forms = document.getElementsByTagName("form");
+				let item = document.getElementById("createItem");
+				forms[0].style.display = "none";
+				forms[1].style.display = "none";
+				forms[2].style.display = "none";
+				forms[3].style.display = "none";
+				
+				item.style.display = "block";
+			}
+			
+			function toggleOffCustomer(){
+				event.preventDefault();
+				let form = document.getElementById("createCustomer");
+				form.style.display = "none";
+			}
+			
+			function toggleOffItem(){
+				event.preventDefault();
+				let form = document.getElementById("createItem");
+				form.style.display = "none";
+			}
+			
+			function switchTables(){
+				let customer = document.getElementById("displayCustomer").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+				let item = document.getElementById("displayItem").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+				if(item.length==0){document.getElementById("displayItem").style.display="none";}
+				if(customer.length==0){document.getElementById("displayCustomer").style.display="none";}
+			}
+			
+			switchTables();
+		</script>
+	</body>
+</html>
